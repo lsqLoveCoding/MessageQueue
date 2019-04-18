@@ -4,16 +4,24 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
+ * 利用redis做队列,我们采用的是redis中list的push和pop操作;
+ * 结合队列的特点：FIFO:先进先出原则
+ * edis中lpush头入(rpop尾出)或rpush尾入(lpop头出)可以满足要求,而Redis中list要push或pop的对象仅需要转换成byte[]即可
+ * java采用Jedis进行Redis的存储和Redis的连接池设置
+ *
  * @Author HITLSQ
  * @Date 2019/4/15
  */
 
 // 工具类，构建jedis连接池，以及一些队列的相关方法
-public class JedisUtil {
+public class JedisUtil implements Serializable {
 
+
+    private static final long serialVersionUID = -8845822685363860550L;
     // 定义jedis连接池
     private static JedisPool jedisPool;
 
@@ -36,7 +44,7 @@ public class JedisUtil {
         config.setTimeBetweenEvictionRunsMillis(3000L);
         config.setNumTestsPerEvictionRun(-1);
         // 配置，主机，端口，超时时间，密码。在安装redis时设置密码为空，所以此处密码为null
-        jedisPool = new JedisPool(config, "127.0.0.1", 6379,60000,null);
+        jedisPool = new JedisPool(config, "127.0.0.1", 6379, 60000, null);
     }
 
     // 获取jedis实例,synchronized防止多个线程同时访问此方法，线程互斥。
@@ -56,6 +64,8 @@ public class JedisUtil {
         } catch (Exception e) {
             if (jedis.isConnected()) {
                 jedis.quit();
+                jedis.disconnect();
+                // jedis.close();
             }
         }
     }

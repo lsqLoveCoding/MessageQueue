@@ -22,7 +22,7 @@ public class ObjectUtil {
     public static byte[] objectToBytes(Object obj) throws IOException {
         //字节数组输出流在内存中创建一个字节数组缓冲区，所有发送到输出流的数据保存在该字节数组缓冲区中
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        // ObjectOutputStream可以将一个对象转换成二进制流，然后可以通过ObjectInputStream将二进制流还原成对象
+        // ObjectOutputStream可以将一个对象转换成二进制流，写入到指定的OutputStream；然后可以通过ObjectInputStream将二进制流还原成对象
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
         objectOutputStream.writeObject(obj);
         byte[] bytes = byteArrayOutputStream.toByteArray();
