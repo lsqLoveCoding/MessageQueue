@@ -24,7 +24,7 @@ public class TestRedisQueue implements Serializable {
         }
     }
 
-    private static byte[] listTobyte(List<Byte> list) {
+    /*private static byte[] listTobyte(List<Byte> list) {
         if (list == null || list.size() < 0)
             return null;
         byte[] bytes = new byte[list.size()];
@@ -35,25 +35,28 @@ public class TestRedisQueue implements Serializable {
             i++;
         }
         return bytes;
-    }
+    }*/
 
     private static void init() throws IOException {
         Jedis jedis = JedisUtil.getJedis();
         for (int i = 1; i <= 10; i++) {
-            Message message = new Message(i, "productor message" + i);
+            Message message = new Message(i, "这是第" + i + "个消息");
             try {
                 // 存储redis队列，顺序存储
                 JedisUtil.lpush(redisKey, ObjectUtil.objectToBytes(message));
+                System.out.println("消息内容：" + message.getMessageContent());
+                System.out.println("生产者产生的第" + i +"个消息已存入redis数据库中");
                 // System.out.println(redisKey.toString());
                 // 获取队列数据
-                String key = new String(redisKey);
-                System.out.println(key);
-                System.out.println(jedis.lrange(redisKey, 0, -1).hashCode());
+                //S tring key = new String(redisKey);
+                // System.out.println(key);
+                // System.out.println(jedis.lrange(redisKey, 0, -1).hashCode());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     /*private static void rpoplpush() throws Exception {
         byte[] bytes = JedisUtil.rpoplpush(redisKey, dstkey);
         Message msg = (Message) ObjectUtil.bytesToObject(bytes);
@@ -66,7 +69,7 @@ public class TestRedisQueue implements Serializable {
         byte[] bytes = JedisUtil.rpop(redisKey);
         Message msg = (Message) ObjectUtil.bytesToObject(bytes);
         if (msg != null) {
-            System.out.println("consumer1----message" + msg.getMessageId() + "----" + msg.getMessageContent());
+            System.out.println("consumer1正在接收第" + msg.getMessageId() + "个消息，消息内容：" + msg.getMessageContent());
         }
     }
 
@@ -80,7 +83,7 @@ public class TestRedisQueue implements Serializable {
 
                 Message msg = (Message) ObjectUtil.bytesToObject(bytes);
                 if (msg != null) {
-                    System.out.println("consumer2----message" + msg.getMessageId() + "----" + msg.getMessageContent());
+                    System.out.println("consumer2正在接收第" + msg.getMessageId() + "个消息，消息内容：" + msg.getMessageContent());
                 }
                 // System.out.println(jedis.lrange(redisKey, 0, -1));
                 // System.out.println(jedis.lrange(dstkey, 0, -1));
